@@ -62,3 +62,6 @@ spring:
         event-out:
           destination: librarypoint
           contentType: application/json
+ api:
+  point:
+    url: http://point:8080
