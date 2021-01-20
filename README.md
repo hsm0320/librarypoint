@@ -36,7 +36,7 @@
  
 ## Event Storming 결과
  * MSAEz 로 모델링한 이벤트스토밍 결과: 
- ![image](https://user-images.githubusercontent.com/53402465/104991785-e6c69180-5a62-11eb-9478-19b0582d4201.PNG)  
+![image](https://user-images.githubusercontent.com/75401893/105200796-8e3ae580-5b83-11eb-851a-be255eb89d1d.png)
 
 
 
@@ -66,6 +66,14 @@ mvn spring-boot:run
 
 cd rental
 mvn spring-boot:run
+
+cd point
+mvn spring-boot:run  
+
+cd notice
+mvn spring-boot:run
+
+
 ```
 
 ## DDD 의 적용
@@ -147,102 +155,28 @@ public interface BookRepository extends PagingAndSortingRepository<Book, Long>{
 3. Correlation
 
 ```
-# 사용자가 도서를 예약한다
-http POST http://20.194.7.119:8080/rentals memberId=1 bookId=1
+# 사용자가 리뷰를 등록한다.
+http POST http://52.141.63.24:8080/books memberId=3 bookId=3 bookReview="행복"
 ```
 
- ![image](https://user-images.githubusercontent.com/53402465/105122171-10da8b00-5b19-11eb-8ed0-664590206d60.png)
+![image](https://user-images.githubusercontent.com/75401893/105201694-7fa0fe00-5b84-11eb-9303-55221242eaf4.png)
+
 
 ```
-#Rental 내역 확인
-http GET http://20.194.7.119:8080/rentals
+# 포인트 등록내역 확인
+http GET http://52.141.63.24:8080/points/3
 ```
 
- ![image](https://user-images.githubusercontent.com/53402465/105122172-10da8b00-5b19-11eb-8fcb-afa4002c7a42.png)
+![image](https://user-images.githubusercontent.com/75401893/105201859-b0813300-5b84-11eb-8370-a4639c35579c.png)
+
 
 ```
-# 사용자 예약 후 결제확인
-http GET http://20.194.7.119:8080/payments
+# 메시지 발송내역 확인
+http GET http://52.141.63.24:8080/notices/3
 ```
 
-![image](https://user-images.githubusercontent.com/53402465/105122173-11732180-5b19-11eb-843a-44b1c61fdbd2.png)
+![image](https://user-images.githubusercontent.com/75401893/105201973-d1498880-5b84-11eb-8667-99d5d0773b7b.png)
 
-```
-# 사용자 예약한 책 상태 확인
-http GET http://20.194.7.119:8080/books
-```
-
-![image](https://user-images.githubusercontent.com/53402465/105122175-11732180-5b19-11eb-819d-6a8f95dd2036.png)
-
-```
-# 사용자 도서 예약취소
-http PATCH http://20.194.7.119:8080/rentals/1 reqState="cancel" 
-```
-
-![image](https://user-images.githubusercontent.com/53402465/105122166-0f10c780-5b19-11eb-8693-f5626f980855.png)
-
-```
-# 결제취소 확인
-http GET http://20.194.7.119:8080/rentals/1
-```
-
-![image](https://user-images.githubusercontent.com/53402465/105122169-1041f480-5b19-11eb-99c9-d4597c9fe0a8.png)
-
-```
-# 사용자 예약 취소한 책 상태 확인
-http GET http://20.194.7.119:8080/books
-```
-
-![image](https://user-images.githubusercontent.com/53402465/105122170-1041f480-5b19-11eb-9496-20c40fcfeffb.png)
-
-```
-#마이페이지 확인
-http GET http://20.194.7.119:8080/mypages/1
-```
-
-![image](https://user-images.githubusercontent.com/75401893/105123042-b4786b00-5b1a-11eb-9f8c-0b0b20a7e8d9.png)
-
-```
-# 사용자 도서 예약
-http POST http://20.194.7.119:8080/rentals memberId=1 bookId=1 
-```
-
-![image](https://user-images.githubusercontent.com/53402465/105122636-ee953d00-5b19-11eb-8147-d9e68ba72f74.png)
-
-```
-# 사용자 도서 대여
-http PATCH http://20.194.7.119:8080/rentals/2 reqState="rental" 
-```
-
-![image](https://user-images.githubusercontent.com/53402465/105122637-ee953d00-5b19-11eb-89f2-002a644ebcf0.png)
-
-```
-# 사용자 대여한 책 상태 확인
-http GET http://20.194.7.119:8080/books/
-```
-
-![image](https://user-images.githubusercontent.com/53402465/105122640-efc66a00-5b19-11eb-9ca2-3671c7b3af80.png)
-
-```
-# 사용자 도서 반납
-http PATCH http://20.194.7.119:8080/rentals/2 reqState="return" 
-```
-
-![image](https://user-images.githubusercontent.com/53402465/105122633-ed641000-5b19-11eb-8568-93f892300c96.png)
-
-```
-# 사용자 반납한 책 상태 확인
-http GET http://20.194.7.119:8080/books
-```
-
-![image](https://user-images.githubusercontent.com/53402465/105122635-edfca680-5b19-11eb-81c2-5a3b8876ede8.png)
-
-```
-#마이페이지 확인
-http GET http://20.194.7.119:8080/mypages/2
-```
-
-![image](https://user-images.githubusercontent.com/75401893/105123049-b8a48880-5b1a-11eb-833e-a44ac80e983a.png)
 
 
 4. Request / Response
@@ -251,53 +185,57 @@ http GET http://20.194.7.119:8080/mypages/2
 
 ## 동기식 호출 과 Fallback 처리
 
-분석단계에서의 조건 중 하나로 대여(rental)->결제(payment) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다. 호출 프로토콜은 이미 앞서 Rest Repository 에 의해 노출되어있는 REST 서비스를 FeignClient 를 이용하여 호출하도록 한다. 
+분석단계에서의 조건 중 하나로 책(book)->포인트(point) 간의 호출은 동기식 일관성을 유지하는 트랜잭션으로 처리하기로 하였다. 호출 프로토콜은 이미 앞서 Rest Repository 에 의해 노출되어있는 REST 서비스를 FeignClient 를 이용하여 호출하도록 한다. 
 
 - 결제서비스를 호출하기 위하여 Stub과 (FeignClient) 를 이용하여 Service 대행 인터페이스 (Proxy) 를 구현 
 
+
 ```
-# (rental) PaymentService.java 내용중
 
-@FeignClient(name="payment", url="${api.payment.url}")
-public interface PaymentService {
+# (book) PointService.java 내용중
 
-    @RequestMapping(method= RequestMethod.POST, path="/payments")//, fallback = PaymentServiceFallback.class)
-    public void payship(@RequestBody Payment payment);
+@FeignClient(name="point", url="${api.point.url}")
+public interface PointService {
+
+    @RequestMapping(method= RequestMethod.POST, path="/points")
+    public void registership(@RequestBody Point point);
 
 }
 
+
 ```
 
-- 예약 이후(@PostPersist) 결제를 요청하도록 처리
+- 리뷰등록 이후(@PostPersist) 포인트등록 요청하도록 처리
 ```
-# Rental.java
+# Book.java
 
     @PostPersist
     public void onPostPersist(){
-        Reserved reserved = new Reserved();
-        BeanUtils.copyProperties(this, reserved);
-        reserved.publishAfterCommit();
+        ...
+        System.out.println("##### 리뷰입니다.");
+            Reviewed reviewed = new Reviewed();
+            BeanUtils.copyProperties(this, reviewed);
+            reviewed.publishAfterCommit();
 
+            //Following code causes dependency to external APIs
+            // it is NOT A GOOD PRACTICE. instead, Event-Policy mapping is recommended.
+            librarypoint.external.Point point = new librarypoint.external.Point();
+            // mappings goes here
+            point.setMemberId(this.memberId);
+            point.setBookId(this.id);
+            point.setBookPoint((long)100);
 
-        //Following code causes dependency to external APIs
-        // it is NOT A GOOD PRACTICE. instead, Event-Policy mapping is recommended.
-        library.external.Payment payment = new library.external.Payment();
-        // mappings goes here
-        payment.setId(this.id);
-        payment.setMemberId(this.memberId);
-        payment.setBookId(this.bookId);
-        payment.setReqState("reserve");
-
-        RentalApplication.applicationContext.getBean(library.external.PaymentService.class)
-            .payship(payment);
+            BookApplication.applicationContext.getBean(librarypoint.external.PointService.class)
+                    .registership(point);
+         ...
     }
 ```
-- 동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 결제 시스템이 장애가 나면 주문도 못받는다는 것을 확인:
+- 동기식 호출에서는 호출 시간에 따른 타임 커플링이 발생하며, 포인트시스템이 장애가 나면 리뷰등록도 못받는다는 것을 확인:
 
 
-# 결제 (payment) 서비스를 잠시 내려놓음
+# 포인트(point) 서비스를 잠시 내려놓음
 
-#주문처리
+# 리뷰등록 처리
 http http://localhost:8081/rentals memberId=1 bookId=1  #Fail 
 ```
 :
