@@ -37,6 +37,28 @@ logging:
     org.springframework.cloud: debug
 server:
   port: 8084
+
+feign:
+  hystrix:
+    enabled: true
+
+# To set thread isolation to SEMAPHORE
+#hystrix:
+#  command:
+#    default:
+#      execution:
+#        isolation:
+#          strategy: SEMAPHORE
+
+hystrix:
+  command:
+    # 전역설정
+    default:
+      execution.isolation.thread.timeoutInMilliseconds: 610
+
+api:
+  point:
+    url: http://localhost:8085
 ---
 
 spring:
@@ -62,6 +84,6 @@ spring:
         event-out:
           destination: librarypoint
           contentType: application/json
- api:
+api:
   point:
     url: http://point:8080

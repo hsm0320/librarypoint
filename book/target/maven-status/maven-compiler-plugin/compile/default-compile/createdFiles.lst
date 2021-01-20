@@ -8,6 +8,7 @@ librarypoint\BookApplication.class
 librarypoint\BookRepository.class
 librarypoint\StatusUpdated.class
 librarypoint\AbstractEvent$1.class
+librarypoint\external\PointServiceFallback.class
 librarypoint\Paid.class
 librarypoint\Refunded.class
 librarypoint\Reviewed.class

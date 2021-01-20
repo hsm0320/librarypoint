@@ -13,6 +13,6 @@ import java.util.Date;
 public interface PointService {
 
     @RequestMapping(method= RequestMethod.POST, path="/points")
-    public void register(@RequestBody Point point);
+    public void registership(@RequestBody Point point);
 
 }

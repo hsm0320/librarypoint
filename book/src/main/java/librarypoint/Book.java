@@ -34,7 +34,7 @@ public class Book {
         //북리뷰가 있으면 리뷰
         else
         {   System.out.println("##### 리뷰입니다.");
-            librarypoint.Reviewed reviewed = new librarypoint.Reviewed();
+            Reviewed reviewed = new Reviewed();
             BeanUtils.copyProperties(this, reviewed);
             reviewed.publishAfterCommit();
 
@@ -47,7 +47,8 @@ public class Book {
             point.setBookPoint((long)100);
 
             BookApplication.applicationContext.getBean(librarypoint.external.PointService.class)
-                    .register(point);
+                    .registership(point);
+
 
 
         }
