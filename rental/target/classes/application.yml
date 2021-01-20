@@ -84,3 +84,6 @@ spring:
         event-out:
           destination: library
           contentType: application/json
+api:
+  payment:
+    url: http://payment:8080

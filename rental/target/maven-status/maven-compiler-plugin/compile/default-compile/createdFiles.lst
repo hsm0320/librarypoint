@@ -7,6 +7,7 @@ library\Cancelled.class
 library\Rentaled.class
 library\Reserved.class
 library\AbstractEvent.class
+library\external\PaymentServiceFallback.class
 library\RentalRepository.class
 library\external\PaymentService.class
 library\Rental.class
