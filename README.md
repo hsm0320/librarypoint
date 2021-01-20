@@ -412,6 +412,17 @@ $ siege -c100 -t60S -v --content-type "application/json" 'http://52.141.63.24:80
 - 운영시스템은 죽지 않고 지속적으로 CB 에 의하여 적절히 회로가 열림과 닫힘이 벌어지면서 자원을 보호하고 있음을 보여줌. 
 - 약 29.9%정도 정상적으로 처리되었음.
 
+istio 로 처리
+
+![image](https://user-images.githubusercontent.com/75401893/105220684-69eb0300-5b9b-11eb-80a4-baa40b116506.png)
+
+100% 성공 확인
+
+![image](https://user-images.githubusercontent.com/75401893/105221545-994e3f80-5b9c-11eb-86f2-613800f90a05.png)
+
+
+
+
 8. Autoscale (HPA)
 ### 오토스케일 아웃
 앞서 CB 는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에 이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다. 
@@ -423,7 +434,7 @@ kubectl autoscale deploy payment --min=1 --max=10 --cpu-percent=15
 ```
 - CB 에서 했던 방식대로 워크로드를 2분 동안 걸어준다.
 ```
-siege -c100 -t120S -r10 --content-type "application/json" 'http://localhost:8081/orders POST {"item": "chicken"}'
+$ siege -c100 -t120S -v --content-type "application/json" 'http://52.141.63.24:8080/books POST {"memberId": 13, "bookId": 3, "bookReview": "감동"}'
 ```
 - 오토스케일이 어떻게 되고 있는지 모니터링을 걸어둔다:
 ```
