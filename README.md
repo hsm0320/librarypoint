@@ -236,21 +236,22 @@ public interface PointService {
 # 포인트(point) 서비스를 잠시 내려놓음
 
 # 리뷰등록 처리
-http http://localhost:8081/rentals memberId=1 bookId=1  #Fail 
+http POST http://52.141.63.24:8080/books memberId=4 bookId=4 bookReview="재미있음"  #Fail 
 ```
-:
-    ![image](https://user-images.githubusercontent.com/53402465/105120797-3e720500-5b16-11eb-8b2f-d51aea5def12.PNG)
+
+![image](https://user-images.githubusercontent.com/75401893/105203142-2043ed80-5b86-11eb-8710-4b7c8390a73a.png)
+
 
 ```
-#결제서비스 재기동
+#포인트 서비스 재기동
 cd payment
 mvn spring-boot:run
 
-#주문처리
-http http://localhost:8081/rentals memberId=1 bookId=1   #Success
+#리뷰등록 처리
+http POST http://52.141.63.24:8080/books memberId=4 bookId=4 bookReview="재미있음"   #Success
 ```
-:
-    ![image](https://user-images.githubusercontent.com/53402465/105120799-3f0a9b80-5b16-11eb-883e-51588b5d6804.PNG)
+![image](https://user-images.githubusercontent.com/75401893/105203471-7add4980-5b86-11eb-8704-649395179b04.png)
+
 
 - 또한 과도한 요청시에 서비스 장애가 도미노 처럼 벌어질 수 있다. (서킷브레이커, 폴백 처리는 운영단계에서 설명한다.)
 
@@ -258,45 +259,51 @@ http http://localhost:8081/rentals memberId=1 bookId=1   #Success
 
 ## 비동기식 호출 / 시간적 디커플링 / 장애격리 / 최종 (Eventual) 일관성 테스트
 
-결제 이후 도서관리(book)시스템으로 결제 완료 여부를 알려주는 행위는 비 동기식으로 처리하여 도서관리 시스템의 처리로 인해 결제주문이 블로킹 되지 않도록 처리한다.
-- 이를 위하여 결제이력에 기록을 남긴 후에 곧바로 결제승인(paid)이 되었다는 도메인 이벤트를 카프카로 송출한다(Publish)
+포인트 등록 이후 알림메시지 발송은 비 동기식으로 처리하여 알림메시지 시스템 처리로 인해 리뷰등록이 블로킹 되지 않도록 처리한다.
+- 이를 위하여 포인트이력에 기록을 남긴 후에 곧바로 등록(registered)이 되었다는 도메인 이벤트를 카프카로 송출한다(Publish)
  
 ```
-# Payment.java
+# Point.java
 
 @Entity
-@Table(name="Payment_table")
-public class Payment {
+@Table(name="Point_table")
+public class Point {
 
  ...
     @PostPersist
     public void onPostPersist(){
-        Paid paid = new Paid();
-        BeanUtils.copyProperties(this, paid);
-        paid.publishAfterCommit();
+        System.out.println("##### 포인트 등록시작");
+        Registered registered = new Registered();
+        BeanUtils.copyProperties(this, registered);
+        registered.publishAfterCommit();
+        System.out.println("##### 포인트 등록끝");
+    }
  ...
 }
 ```
-- 도서관리 서비스는 결제완료 이벤트를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다:
+- 알림서비스는 등록완료 이벤트를 수신하여 자신의 정책을 처리하도록 PolicyHandler 를 구현한다
 
 ```
-# PolicyHandler.java (book)
+# PolicyHandler.java (notice)
 ...
 
 @Service
 public class PolicyHandler{
 
     @StreamListener(KafkaProcessor.INPUT)
-    public void wheneverPaid_(@Payload Paid paid){
-        // 결제완료(예약)
-        if(paid.isMe()){
-            Book book = new Book();
-            book.setId(paid.getBookId());
-            book.setMemberId(paid.getMemberId());
-            book.setRendtalId(paid.getId());
-            book.setBookStatus("reserved");
+    public void wheneverRegistered_(@Payload Registered registered){
 
-            bookRepository.save(book);
+        if(registered.isMe()){
+            System.out.println("##### 메시지 발송  : ");
+
+            Notice notice = new Notice();
+
+            notice.setId(registered.getId());
+            notice.setMemberId(registered.getMemberId());
+            notice.setBookId(registered.getBookId());
+            notice.setBookPoint(registered.getBookPoint());
+
+            noticeRepository.save(notice);
         }
     }
 }
@@ -304,31 +311,36 @@ public class PolicyHandler{
 ```
 
 
-도서관리 시스템은 대여/결제와 완전히 분리되어있으며, 이벤트 수신에 따라 처리되기 때문에, 도서관리시스템이 유지보수로 인해 잠시 내려간 상태라도 주문을 받는데 문제가 없다:
-```
-# 도서관리 서비스 (book) 를 잠시 내려놓음
-
-#주문처리
-http http://localhost:8081/rentals memberId=1 bookId=1  #Success  
-
+알림 시스템은 리뷰등록,포인트와 완전히 분리되어있으며, 이벤트 수신에 따라 처리되기 때문에, 도서관리시스템이 유지보수로 인해 잠시 내려간 상태라도 리뷰등록을 받는데 문제가 없다
 
 ```
-#주문상태 확인
+
+# 알림서비스(notice) 를 잠시 내려놓음
+
+# 리뷰등록 처리
+http POST http://52.141.63.24:8080/books memberId=5 bookId=5 bookReview="감동적임"  #Success  
+
+등록은 되나 알림은 조회불가
+
+```
+# 알림 상태 확인
 
 :
-    ![image](https://user-images.githubusercontent.com/53402465/105119392-96f3d300-5b13-11eb-99b0-f9a79bdde8b7.PNG)
+![image](https://user-images.githubusercontent.com/75401893/105206084-4a4adf00-5b89-11eb-9df7-698d333e415b.png)
+
 
 ``` 
 
-#상점 서비스 기동
-cd book
+#알림 서비스 기동
+cd notice
 mvn spring-boot:run
 
-#주문상태 확인
-http localhost:8080/rentals     # 모든 주문의 상태가 "reserved"으로 확인
+#알림상태 확인
+http GET  http://52.141.63.24:8080/notices     # 모든 주문의 상태가 "reserved"으로 확인
 ```
 :
-    ![image](https://user-images.githubusercontent.com/53402465/105119394-978c6980-5b13-11eb-8159-65886bee3a81.PNG)
+![image](https://user-images.githubusercontent.com/75401893/105206709-00aec400-5b8a-11eb-9b41-9341115c623a.png)
+
 
 
 # 운영
