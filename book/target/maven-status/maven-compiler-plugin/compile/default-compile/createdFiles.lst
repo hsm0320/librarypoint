@@ -1,0 +1,16 @@
+librarypoint\Book.class
+librarypoint\config\kafka\KafkaProcessor.class
+librarypoint\AbstractEvent.class
+librarypoint\Returned.class
+librarypoint\external\Point.class
+librarypoint\BookController.class
+librarypoint\BookApplication.class
+librarypoint\BookRepository.class
+librarypoint\StatusUpdated.class
+librarypoint\AbstractEvent$1.class
+librarypoint\Paid.class
+librarypoint\Refunded.class
+librarypoint\Reviewed.class
+librarypoint\Rentaled.class
+librarypoint\PolicyHandler.class
+librarypoint\external\PointService.class
