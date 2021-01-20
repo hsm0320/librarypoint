@@ -244,7 +244,7 @@ http POST http://52.141.63.24:8080/books memberId=4 bookId=4 bookReview="재미�
 
 ```
 #포인트 서비스 재기동
-cd payment
+cd point
 mvn spring-boot:run
 
 #리뷰등록 처리
