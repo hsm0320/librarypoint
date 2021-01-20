@@ -74,7 +74,7 @@ spring:
         - id: notice
           uri: http://notice:8080
           predicates:
-            - Path= 
+            - Path=/notices/**
       globalcors:
         corsConfigurations:
           '[/**]':
