@@ -1,6 +1,10 @@
 librarypoint\AbstractEvent$1.class
+librarypoint\Notice.class
+librarypoint\Noticed.class
 librarypoint\config\kafka\KafkaProcessor.class
 librarypoint\NoticeApplication.class
 librarypoint\Registered.class
 librarypoint\AbstractEvent.class
+librarypoint\NoticeController.class
+librarypoint\NoticeRepository.class
 librarypoint\PolicyHandler.class

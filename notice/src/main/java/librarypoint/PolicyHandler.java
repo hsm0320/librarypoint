@@ -14,14 +14,22 @@ public class PolicyHandler{
     public void onStringEventListener(@Payload String eventString){
 
     }
-
+    @Autowired
+    NoticeRepository noticeRepository;
     @StreamListener(KafkaProcessor.INPUT)
     public void wheneverRegistered_(@Payload Registered registered){
 
         if(registered.isMe()){
-            System.out.println("##### 카카오톡 메시지 송신 " + registered.toJson());
+            System.out.println("##### 메시지 발송  : ");
 
+            Notice notice = new Notice();
 
+            notice.setId(registered.getId());
+            notice.setMemberId(registered.getMemberId());
+            notice.setBookId(registered.getBookId());
+            notice.setBookPoint(registered.getBookPoint());
+
+            noticeRepository.save(notice);
         }
     }
 
