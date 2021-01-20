@@ -353,9 +353,9 @@ http GET  http://52.141.63.24:8080/notices     # 모든 주문의 상태가 "res
 
 6. Deploy / Pipeline
 
-![image](https://user-images.githubusercontent.com/75237785/105120584-d6232380-5b15-11eb-8422-bb9bfc0cb273.jpg)
+![image](https://user-images.githubusercontent.com/75401893/105215138-3ce72200-5b94-11eb-9056-39617f597cd6.png)
 
-![image](https://user-images.githubusercontent.com/75237785/105121326-41212a00-5b17-11eb-840f-d3c3bc369163.jpg)
+
 
 
 
@@ -365,7 +365,7 @@ http GET  http://52.141.63.24:8080/notices     # 모든 주문의 상태가 "res
 
 * 서킷 브레이킹 프레임워크의 선택: Spring FeignClient + Hystrix 옵션을 사용하여 구현함
 
-시나리오는 대여(rental)-->결제(payment) 연결을 RESTful Request/Response 로 연동하여 구현이 되어있고, 결제 요청이 과도할 경우 CB 를 통하여 장애격리.
+시나리오는 리뷰등록(book)-->포인트(point) 연결을 RESTful Request/Response 로 연동하여 구현이 되어있고, 결제 요청이 과도할 경우 CB 를 통하여 장애격리.
 
 - Hystrix 를 설정:  요청처리 쓰레드에서 처리시간이 610 밀리가 넘어서기 시작하여 어느정도 유지되면 CB 회로가 닫히도록 (요청을 빠르게 실패처리, 차단) 설정
 ```
@@ -379,9 +379,9 @@ hystrix:
 
 ```
 
-- 피호출 서비스(결제:payment) 의 임의 부하 처리 - 400 밀리에서 증감 220 밀리 정도 왔다갔다 하게
+- 피호출 서비스(point) 의 임의 부하 처리 - 400 밀리에서 증감 220 밀리 정도 왔다갔다 하게
 ```
-# Payment.java 
+# Point.java 
 
     @PostPersist
     public void onPostPersist(){  //결제이력을 저장한 후 적당한 시간 끌기
@@ -401,22 +401,23 @@ hystrix:
 - 60초 동안 실시
 
 ```
-$ siege -c100 -t60S -v --content-type "application/json" 'http://rental:8080/rentals POST {"memberId":1, "bookId":1}'
+$ siege -c100 -t60S -v --content-type "application/json" 'http://52.141.63.24:8080/books POST {"memberId": 13, "bookId": 3, "bookReview": "감동"}'
+
 ```
  
-![image](https://user-images.githubusercontent.com/53402465/105115586-6d837900-5b0c-11eb-81be-448a9d34edea.jpg)
-   
-![image](https://user-images.githubusercontent.com/53402465/105115589-6f4d3c80-5b0c-11eb-9819-36eab2df1a12.jpg)
+
+![image](https://user-images.githubusercontent.com/75401893/105214766-c34f3400-5b93-11eb-8273-fb85e6267906.png)
+
 
 - 운영시스템은 죽지 않고 지속적으로 CB 에 의하여 적절히 회로가 열림과 닫힘이 벌어지면서 자원을 보호하고 있음을 보여줌. 
-- 약 97%정도 정상적으로 처리되었음.
+- 약 29.9%정도 정상적으로 처리되었음.
 
 8. Autoscale (HPA)
 ### 오토스케일 아웃
 앞서 CB 는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에 이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다. 
 
 
-- 결제서비스에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 CPU 사용량이 15프로를 넘어서면 replica 를 10개까지 늘려준다:
+- 포인트 서비스에 대한 replica 를 동적으로 늘려주도록 HPA 를 설정한다. 설정은 CPU 사용량이 15프로를 넘어서면 replica 를 10개까지 늘려준다:
 ```
 kubectl autoscale deploy payment --min=1 --max=10 --cpu-percent=15
 ```
