@@ -448,6 +448,9 @@ kubectl get deploy pay -w
 
 ![image](https://user-images.githubusercontent.com/53402465/105116542-50e84080-5b0e-11eb-8da0-33f742007e41.jpg)
 
+![image](https://user-images.githubusercontent.com/75401893/105282023-c1678e00-5bf0-11eb-9956-6ca0dedd3c8f.png)
+
+
 ## 무정지 재배포
 9. Zero-downtime deploy (readiness probe)
 
@@ -498,7 +501,7 @@ notice의 pom.xml dependency를 수정하여 DB변경
   
 ## 11. gateway
   
-  
+  ```
   server:
   port: 8088
 
@@ -585,7 +588,7 @@ spring:
 
 server:
   port: 8080
-
+```
 
 ## Gateway 서비스 실행 상태에서 8088과 8085로 각각 서비스 실행하였을 때 동일하게 point 서비스 실행되었다.
 
