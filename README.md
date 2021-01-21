@@ -489,9 +489,9 @@ kubectl apply -f kubernetes/deployment.yaml
 
 10. 폴리그랏
 
-notice 는 다른 서비스와 구별을 위해 별도 hsqldb를 사용, 이를 위해 notice내 pom.xml에 dependency를 h2database에서 hsqldb로 변경 하였다.
+## notice 는 다른 서비스와 구별을 위해 별도 hsqldb를 사용, 이를 위해 notice내 pom.xml에 dependency를 h2database에서 hsqldb로 변경 하였다.
 
-#notice의 pom.xml dependency를 수정하여 DB변경
+* notice의 pom.xml dependency를 수정하여 DB변경
 
   <!--
   <dependency>
@@ -602,7 +602,7 @@ spring:
 server:
   port: 8080
 
-# Gateway 서비스 실행 상태에서 8088과 8085로 각각 서비스 실행하였을 때 동일하게 point 서비스 실행되었다.
+## Gateway 서비스 실행 상태에서 8088과 8085로 각각 서비스 실행하였을 때 동일하게 point 서비스 실행되었다.
 
 ![image](https://user-images.githubusercontent.com/75401893/105271019-21066f00-5bda-11eb-889f-61b70911c119.png)
 
