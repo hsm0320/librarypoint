@@ -422,9 +422,9 @@ istio 로 처리
 
 
 
-
-8. Autoscale (HPA)
 ### 오토스케일 아웃
+8. Autoscale (HPA)
+
 앞서 CB 는 시스템을 안정되게 운영할 수 있게 해줬지만 사용자의 요청을 100% 받아들여주지 못했기 때문에 이에 대한 보완책으로 자동화된 확장 기능을 적용하고자 한다. 
 
 
@@ -448,9 +448,9 @@ kubectl get deploy pay -w
 
 ![image](https://user-images.githubusercontent.com/53402465/105116542-50e84080-5b0e-11eb-8da0-33f742007e41.jpg)
 
-
-9. Zero-downtime deploy (readiness probe)
 ## 무정지 재배포
+9. Zero-downtime deploy (readiness probe)
+
 
 * 먼저 무정지 재배포가 100% 되는 것인지 확인하기 위해서 Autoscaler 이나 CB 설정을 제거함
 
@@ -487,9 +487,9 @@ kubectl apply -f kubernetes/deployment.yaml
 배포기간 동안 Availability 가 변화없기 때문에 무정지 재배포가 성공한 것으로 확인됨.
 
 
-10. 폴리그랏
+## 10. 폴리그랏
 
-## notice 는 다른 서비스와 구별을 위해 별도 hsqldb를 사용, 이를 위해 notice내 pom.xml에 dependency를 h2database에서 hsqldb로 변경 하였다.
+notice 는 다른 서비스와 구별을 위해 별도 hsqldb를 사용, 이를 위해 notice내 pom.xml에 dependency를 h2database에서 hsqldb로 변경 하였다.
 
 * notice의 pom.xml dependency를 수정하여 DB변경
 
@@ -602,7 +602,7 @@ spring:
 server:
   port: 8080
 
-## Gateway 서비스 실행 상태에서 8088과 8085로 각각 서비스 실행하였을 때 동일하게 point 서비스 실행되었다.
+Gateway 서비스 실행 상태에서 8088과 8085로 각각 서비스 실행하였을 때 동일하게 point 서비스 실행되었다.
 
 ![image](https://user-images.githubusercontent.com/75401893/105271019-21066f00-5bda-11eb-889f-61b70911c119.png)
 
