@@ -493,28 +493,14 @@ notice 는 다른 서비스와 구별을 위해 별도 hsqldb를 사용, 이를 
 
 notice의 pom.xml dependency를 수정하여 DB변경
 
-  <!--
-  <dependency>
-    <groupId>com.h2database</groupId>
-    <artifactId>h2</artifactId>
-    <scope>runtime</scope>
-  </dependency>
-  -->
+![image](https://user-images.githubusercontent.com/75401893/105279520-10aac000-5beb-11eb-8b34-74771271b401.png)
 
-  <dependency>
-    <groupId>org.hsqldb</groupId>
-    <artifactId>hsqldb</artifactId>
-    <version>2.4.0</version>
-    <scope>runtime</scope>
-  </dependency>
   
 ## 11. gateway
   
   
   server:
   port: 8088
-
----
 
 spring:
   profiles: default
@@ -556,8 +542,6 @@ spring:
               - "*"
             allowCredentials: true
 
-
----
 
 spring:
   profiles: docker
