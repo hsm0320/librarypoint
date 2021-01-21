@@ -485,3 +485,129 @@ kubectl apply -f kubernetes/deployment.yaml
 ![image](https://user-images.githubusercontent.com/53402465/105119438-af63ed80-5b13-11eb-981e-bb5b1c754cea.jpg)
 
 배포기간 동안 Availability 가 변화없기 때문에 무정지 재배포가 성공한 것으로 확인됨.
+
+
+10. 폴리그랏
+
+notice 는 다른 서비스와 구별을 위해 별도 hsqldb를 사용, 이를 위해 notice내 pom.xml에 dependency를 h2database에서 hsqldb로 변경 하였다.
+
+#notice의 pom.xml dependency를 수정하여 DB변경
+
+  <!--
+  <dependency>
+    <groupId>com.h2database</groupId>
+    <artifactId>h2</artifactId>
+    <scope>runtime</scope>
+  </dependency>
+  -->
+
+  <dependency>
+    <groupId>org.hsqldb</groupId>
+    <artifactId>hsqldb</artifactId>
+    <version>2.4.0</version>
+    <scope>runtime</scope>
+  </dependency>
+  
+11. gateway
+  
+  
+  server:
+  port: 8088
+
+---
+
+spring:
+  profiles: default
+  cloud:
+    gateway:
+      routes:
+        - id: rental
+          uri: http://localhost:8081
+          predicates:
+            - Path=/rentals/** 
+        - id: payment
+          uri: http://localhost:8082
+          predicates:
+            - Path=/payments/** 
+        - id: mypage
+          uri: http://localhost:8083
+          predicates:
+            - Path= /mypages/**
+        - id: book
+          uri: http://localhost:8084
+          predicates:
+            - Path=/books/** 
+        - id: point
+          uri: http://localhost:8085
+          predicates:
+            - Path=/points/** 
+        - id: notice
+          uri: http://localhost:8086
+          predicates:
+            - Path= 
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+
+---
+
+spring:
+  profiles: docker
+  cloud:
+    gateway:
+      routes:
+        - id: rental
+          uri: http://rental:8080
+          predicates:
+            - Path=/rentals/** 
+        - id: payment
+          uri: http://payment:8080
+          predicates:
+            - Path=/payments/** 
+        - id: mypage
+          uri: http://mypage:8080
+          predicates:
+            - Path= /mypages/**
+        - id: book
+          uri: http://book:8080
+          predicates:
+            - Path=/books/** 
+        - id: point
+          uri: http://point:8080
+          predicates:
+            - Path=/points/** 
+        - id: notice
+          uri: http://notice:8080
+          predicates:
+            - Path= 
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins:
+              - "*"
+            allowedMethods:
+              - "*"
+            allowedHeaders:
+              - "*"
+            allowCredentials: true
+
+server:
+  port: 8080
+
+# Gateway 서비스 실행 상태에서 8088과 8085로 각각 서비스 실행하였을 때 동일하게 point 서비스 실행되었다.
+
+![image](https://user-images.githubusercontent.com/75401893/105271019-21066f00-5bda-11eb-889f-61b70911c119.png)
+
+![image](https://user-images.githubusercontent.com/75401893/105271002-121fbc80-5bda-11eb-8417-b53bbabd2e89.png)
+
+
+
+
